@@ -6,7 +6,7 @@
   },
   "rewrites": [
     {
-      "source": "/api/send-mission",
+      "source": "/api-send-mission",
       "destination": "/api-send-mission.js"
     }
   ]
