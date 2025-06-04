@@ -2,30 +2,37 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>🚀 TURBO Mode</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="turbo.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TURBO MISSION</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
-    <img src="acdash.png" alt="AC Dashboard Logo" />
+    <img src="acdash.png" alt="Logo" style="height: 64px;">
+    <h1 style="font-family: 'Cursive'; font-weight: bold; color: #ff00ff;">TURBO</h1>
   </header>
 
-  <h1>🚀 TURBO Mode</h1>
+  <main>
+    <form id="missionForm">
+      <label>What you want to find:</label>
+      <input type="text" id="goal" required />
 
-  <form id="missionForm">
-    <input type="text" id="goal" placeholder="What you want to find" required /><br />
-    <select id="payment">
-      <option>Ko-Fi</option>
-      <option>Nuts In Game</option>
-      <option>PayPal</option>
-      <option>Meta Quest Game</option>
-    </select><br />
-    <input type="text" id="username" placeholder="Meta Quest Username" required /><br />
-    <button type="submit">Submit TURBO Mission</button>
-  </form>
+      <label>How you want to pay:</label>
+      <select id="payment">
+        <option value="Ko-Fi">Ko-Fi</option>
+        <option value="Nuts In Game">Nuts In Game</option>
+        <option value="PayPal">PayPal</option>
+        <option value="Meta Quest Game">Meta Quest Game</option>
+      </select>
 
-  <div id="lobbyCode"></div>
+      <label>Meta Quest Username:</label>
+      <input type="text" id="username" required />
+
+      <button type="submit" class="turbo-button">Send Turbo Mission</button>
+    </form>
+
+    <p id="lobbyCode" class="lobby-code-display"></p>
+  </main>
 
   <script src="turbo.js"></script>
 </body>
