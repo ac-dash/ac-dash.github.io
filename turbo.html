@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TURBO MISSION</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>Turbo Mission</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <img src="acdash.png" alt="Logo" style="height: 64px;">
-    <h1 style="font-family: 'Cursive'; font-weight: bold; color: #ff00ff;">TURBO</h1>
+  <header class="header">
+    <img src="acdash.png" alt="AC Dash Logo" class="logo" />
+    <h1 class="turbo-heading">🚀 TURBO MODE</h1>
   </header>
 
-  <main>
+  <main class="form-section">
     <form id="missionForm">
       <label>What you want to find:</label>
       <input type="text" id="goal" required />
@@ -28,7 +27,10 @@
       <label>Meta Quest Username:</label>
       <input type="text" id="username" required />
 
-      <button type="submit" class="turbo-button">Send Turbo Mission</button>
+      <label>Turbo Password:</label>
+      <input type="password" id="turboPass" required />
+
+      <button type="submit" class="gradient-button bold">Send Turbo Mission</button>
     </form>
 
     <p id="lobbyCode" class="lobby-code-display"></p>
