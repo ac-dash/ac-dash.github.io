@@ -1,4 +1,3 @@
-// ⚠️ This cache resets every time the Vercel function is cold-started or redeployed
 const cooldowns = new Map(); // In-memory IP → timestamp
 
 export default async function handler(req, res) {
