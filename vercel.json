@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "api-send-mission.js": {
+      "runtime": "edge"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/send-mission",
+      "destination": "/api-send-mission.js"
+    }
+  ]
+}
