@@ -3,9 +3,15 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  const { goal, payment, username, code, turbo } = req.body;
+  const { goal, payment, username, code, turbo, password } = req.body;
 
-  const webhookUrl = "https://discord.com/api/webhooks/1379745734613532764/d5idZgf5zU5K_ZytGwqEcWmg9OZkChrOu4RHTR-Q5NIVG6yWFnCy0fZU-zS-NVeGybXl";
+  const expectedPassword = process.env.TURBO_PASSWORD;
+  const webhookUrl = process.env.DISCORD_WEBHOOK;
+
+  // Password required for turbo
+  if (turbo && password !== expectedPassword) {
+    return res.status(403).json({ error: 'Invalid Turbo Password' });
+  }
 
   const content = turbo
     ? `🚀 **TURBO MISSION**\n🎯 Goal: ${goal}\n💳 Payment: ${payment}\n🎮 User: ${username}\n🔗 **Animal Company lobby code (Join this now):** ${code}`
