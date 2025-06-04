@@ -1,4 +1,4 @@
-const encodedWebhook = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTM3OTc0NTczNDYxMzUzMjc2NC9kNWlkWmdmNXpVNWtafll0R3dxRWNXbWc5T1prQ2hyT3VSRFJRLVE1TklWRzZ5V25DeTBmWlUtenMtTlZlR3liWGw=";
+const encodedWebhook = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTM3OTc0NTczNDYxMzUzMjc2NC9kNWlkWmdmNXpVNUtfWnl0R3dxRWNXbWc5T1prQ2hyT3U0UkhUUi1RNU5JVkc2eVdGbkN5MGZaVS16Uy1OVmVHeWJYbA==";
 const webhookUrl = atob(encodedWebhook);
 
 function generateCode(length = 7) {
