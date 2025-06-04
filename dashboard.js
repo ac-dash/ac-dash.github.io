@@ -13,8 +13,8 @@ function setCooldown() {
 }
 
 function generateCode() {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  return Array.from({ length: 7 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  return Array.from({ length: 7 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
 }
 
 document.getElementById("missionForm").addEventListener("submit", async (e) => {
@@ -35,21 +35,20 @@ document.getElementById("missionForm").addEventListener("submit", async (e) => {
     payment,
     username,
     code,
-    turbo: false
+    turbo: false,
   };
 
   try {
     const response = await fetch("/api/send-mission", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     });
 
     const result = await response.json();
 
     if (response.ok && result.success) {
-      document.getElementById("lobbyCode").textContent =
-        `Animal Company lobby code (Join this now): ${code}`;
+      document.getElementById("lobbyCode").textContent = `Animal Company lobby code (Join this now): ${code}`;
       setCooldown();
     } else {
       alert("Error: " + (result.error || "Unknown error"));
