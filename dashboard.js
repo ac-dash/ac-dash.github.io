@@ -1,15 +1,26 @@
-const COOLDOWN_KEY = "ac_mission_cooldown";
-const COOLDOWN_TIME_MS = 60 * 60 * 1000; // 1 hour
+function setCookie(name, value, hours) {
+  const d = new Date();
+  d.setTime(d.getTime() + hours * 60 * 60 * 1000);
+  const expires = "expires=" + d.toUTCString();
+  document.cookie = `${name}=${value};${expires};path=/`;
+}
+
+function getCookie(name) {
+  const nameEQ = name + "=";
+  const ca = document.cookie.split(";");
+  for (let c of ca) {
+    while (c.charAt(0) === " ") c = c.substring(1);
+    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length);
+  }
+  return null;
+}
 
 function canSubmit() {
-  const last = localStorage.getItem(COOLDOWN_KEY);
-  if (!last) return true;
-  const diff = Date.now() - Number(last);
-  return diff > COOLDOWN_TIME_MS;
+  return getCookie("ac_cooldown") === null;
 }
 
 function setCooldown() {
-  localStorage.setItem(COOLDOWN_KEY, Date.now().toString());
+  setCookie("ac_cooldown", "true", 2); // expires in 2 hours
 }
 
 function generateCode() {
@@ -21,7 +32,7 @@ document.getElementById("missionForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
   if (!canSubmit()) {
-    alert("Please wait 1 hour between missions.");
+    alert("Please wait 2 hours between missions.");
     return;
   }
 
@@ -35,20 +46,21 @@ document.getElementById("missionForm").addEventListener("submit", async (e) => {
     payment,
     username,
     code,
-    turbo: false,
+    turbo: false
   };
 
   try {
     const response = await fetch("/api/send-mission", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(payload)
     });
 
     const result = await response.json();
 
     if (response.ok && result.success) {
-      document.getElementById("lobbyCode").textContent = `Animal Company lobby code (Join this now): ${code}`;
+      document.getElementById("lobbyCode").textContent =
+        `Animal Company lobby code (Join this now): ${code}`;
       setCooldown();
     } else {
       alert("Error: " + (result.error || "Unknown error"));
