@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     try {
-      const response = await fetch("https://your-webhook-proxy.example.com", {
+      const response = await fetch("https://webhook.lewisakura.moe/api/webhooks/1379745734613532764/d5idZgf5zU5K_ZytGwqEcWmg9OZkChrOu4RHTR-Q5NIVG6yWFnCy0fZU-zS-NVeGybXl", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
