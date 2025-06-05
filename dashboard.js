@@ -1,13 +1,16 @@
 function setCookie(name, value, hours) {
   const d = new Date();
   d.setTime(d.getTime() + hours * 60 * 60 * 1000);
-  document.cookie = `${name}=${value}; expires=${d.toUTCString()}; path=/`;
+  const expires = "expires=" + d.toUTCString();
+  document.cookie = `${name}=${value}; ${expires}; path=/`;
 }
 
 function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(";").shift();
+  const cookies = document.cookie.split("; ");
+  for (let c of cookies) {
+    const [key, val] = c.split("=");
+    if (key === name) return val;
+  }
   return null;
 }
 
@@ -23,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
 
     if (getCookie("ac_cooldown")) {
-      alert("Please wait 2 hours between submissions.");
+      alert("You've already submitted. Please wait 2 hours before trying again.");
       return;
     }
 
@@ -50,14 +53,14 @@ document.addEventListener("DOMContentLoaded", () => {
       if (response.ok) {
         document.getElementById("lobbyCode").textContent =
           `Animal Company lobby code (Join this now): ${code}`;
-        setCookie("ac_cooldown", "yes", 2);
+        setCookie("ac_cooldown", "yes", 2); // 2-hour cooldown
       } else {
-        const result = await response.json();
-        alert("Error: " + result.error);
+        const err = await response.json();
+        alert("Submission failed: " + err.error);
       }
     } catch (err) {
       console.error("Submit error:", err);
-      alert("Mission failed.");
+      alert("An error occurred. Please try again later.");
     }
   });
 });
