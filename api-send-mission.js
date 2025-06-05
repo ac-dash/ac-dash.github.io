@@ -1,44 +1,50 @@
-const cooldowns = new Map(); // In-memory IP → timestamp
-
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  const webhookUrl = process.env.DISCORD_WEBHOOK;
+  if (!webhookUrl) {
+    return res.status(500).json({ error: "Webhook URL not configured" });
+  }
 
   const { goal, payment, username, code, turbo } = req.body;
 
-  const webhookUrl = process.env.DISCORD_WEBHOOK;
-  const ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress;
-
-  const now = Date.now();
-  const lastSent = cooldowns.get(ip);
-
-  // ⏳ Check 1-hour cooldown (3600000 ms)
-  if (lastSent && now - lastSent < 3600000) {
-    const mins = Math.ceil((3600000 - (now - lastSent)) / 60000);
-    return res.status(429).json({ error: `Cooldown active. Try again in ${mins} min(s).` });
-  }
-
-  const content = turbo
-    ? `🚀 **TURBO MISSION**\n🎯 Goal: ${goal}\n💳 Payment: ${payment}\n🎮 User: ${username}\n🔗 **Animal Company lobby code (Join this now):** ${code}`
-    : `🎯 Goal: ${goal}\n💳 Payment: ${payment}\n🎮 User: ${username}\n🔗 **Animal Company lobby code (Join this now):** ${code}`;
+  const message = {
+    username: turbo ? "🚀 TURBO Mission" : "Mission Request",
+    embeds: [
+      {
+        title: turbo ? "🔥 TURBO MISSION STARTED" : "🎯 New Mission Request",
+        color: turbo ? 0xff3366 : 0x00aaff,
+        fields: [
+          { name: "Goal", value: goal || "N/A", inline: false },
+          { name: "Payment", value: payment || "N/A", inline: true },
+          { name: "Meta Username", value: username || "N/A", inline: true },
+          { name: "Lobby Code", value: `\`${code}\``, inline: false }
+        ],
+        footer: {
+          text: turbo ? "Turbo Priority Request" : "Standard Request"
+        },
+        timestamp: new Date().toISOString()
+      }
+    ]
+  };
 
   try {
     const discordRes = await fetch(webhookUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content }),
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(message)
     });
 
     if (!discordRes.ok) {
-      return res.status(500).json({ error: 'Failed to send to Discord' });
+      const error = await discordRes.text();
+      return res.status(400).json({ error: "Discord error", detail: error });
     }
-
-    // ✅ Store current time as last-used for this IP
-    cooldowns.set(ip, now);
 
     res.status(200).json({ success: true });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Unexpected error' });
+    console.error("Error sending to Discord:", err);
+    res.status(500).json({ error: "Internal error" });
   }
 }
-
