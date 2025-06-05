@@ -1,26 +1,14 @@
 function setCookie(name, value, hours) {
   const d = new Date();
   d.setTime(d.getTime() + hours * 60 * 60 * 1000);
-  const expires = "expires=" + d.toUTCString();
-  document.cookie = `${name}=${value};${expires};path=/`;
+  document.cookie = `${name}=${value}; expires=${d.toUTCString()}; path=/`;
 }
 
 function getCookie(name) {
-  const nameEQ = name + "=";
-  const ca = document.cookie.split(";");
-  for (let c of ca) {
-    while (c.charAt(0) === " ") c = c.substring(1);
-    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length);
-  }
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(";").shift();
   return null;
-}
-
-function canSubmit() {
-  return getCookie("ac_cooldown") === null;
-}
-
-function setCooldown() {
-  setCookie("ac_cooldown", "true", 2); // expires in 2 hours
 }
 
 function generateCode() {
@@ -28,45 +16,47 @@ function generateCode() {
   return Array.from({ length: 7 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
 }
 
-document.getElementById("missionForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("missionForm");
 
-  if (!canSubmit()) {
-    alert("Please wait 2 hours between missions.");
-    return;
-  }
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-  const goal = document.getElementById("goal").value;
-  const payment = document.getElementById("payment").value;
-  const username = document.getElementById("username").value;
-  const code = generateCode();
-
-  const payload = {
-    goal,
-    payment,
-    username,
-    code,
-    turbo: false
-  };
-
-  try {
-    const response = await fetch("/api/send-mission", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-
-    const result = await response.json();
-
-    if (response.ok && result.success) {
-      document.getElementById("lobbyCode").textContent =
-        `Animal Company lobby code (Join this now): ${code}`;
-      setCooldown();
-    } else {
-      alert("Error: " + (result.error || "Unknown error"));
+    if (getCookie("ac_cooldown") !== null) {
+      alert("Please wait 2 hours between submissions.");
+      return;
     }
-  } catch (error) {
-    console.error("Dashboard error:", error);
-    alert("Failed to send mission.");
-  }
+
+    const goal = document.getElementById("goal").value;
+    const payment = document.getElementById("payment").value;
+    const username = document.getElementById("username").value;
+    const code = generateCode();
+
+    const payload = {
+      goal,
+      payment,
+      username,
+      code,
+      turbo: false,
+    };
+
+    try {
+      const response = await fetch("https://your-webhook-proxy.example.com", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        document.getElementById("lobbyCode").textContent =
+          `Animal Company lobby code (Join this now): ${code}`;
+        setCookie("ac_cooldown", "yes", 2); // 2-hour cooldown
+      } else {
+        alert("Error sending mission.");
+      }
+    } catch (err) {
+      console.error("Mission error:", err);
+      alert("Failed to send mission.");
+    }
+  });
 });
