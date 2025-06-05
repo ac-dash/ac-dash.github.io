@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    if (getCookie("ac_cooldown") !== null) {
+    if (getCookie("ac_cooldown")) {
       alert("Please wait 2 hours between submissions.");
       return;
     }
@@ -37,26 +37,27 @@ document.addEventListener("DOMContentLoaded", () => {
       payment,
       username,
       code,
-      turbo: false,
+      turbo: false
     };
 
     try {
-      const response = await fetch("https://your-webhook-proxy.example.com", {
+      const response = await fetch("/api/send-mission", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(payload)
       });
 
       if (response.ok) {
         document.getElementById("lobbyCode").textContent =
           `Animal Company lobby code (Join this now): ${code}`;
-        setCookie("ac_cooldown", "yes", 2); // 2-hour cooldown
+        setCookie("ac_cooldown", "yes", 2);
       } else {
-        alert("Error sending mission.");
+        const result = await response.json();
+        alert("Error: " + result.error);
       }
     } catch (err) {
-      console.error("Mission error:", err);
-      alert("Failed to send mission.");
+      console.error("Submit error:", err);
+      alert("Mission failed.");
     }
   });
 });
