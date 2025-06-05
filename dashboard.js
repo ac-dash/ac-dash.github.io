@@ -1,14 +1,16 @@
 function setCookie(name, value, hours) {
-  const d = new Date();
-  d.setTime(d.getTime() + hours * 60 * 60 * 1000);
-  document.cookie = `${name}=${value}; expires=${d.toUTCString()}; path=/`;
+  const now = new Date();
+  now.setTime(now.getTime() + hours * 60 * 60 * 1000);
+  document.cookie = `${name}=${value};expires=${now.toUTCString()};path=/`;
 }
 
 function getCookie(name) {
-  const cookies = document.cookie.split('; ');
-  for (let c of cookies) {
-    const [key, val] = c.split('=');
-    if (key === name) return val;
+  const nameEQ = name + "=";
+  const ca = document.cookie.split(';');
+  for (let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
   }
   return null;
 }
@@ -25,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
 
     if (getCookie("ac_cooldown")) {
-      alert("You must wait before submitting again.");
+      alert("You must wait before submitting another mission.");
       return;
     }
 
@@ -51,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (response.ok) {
         document.getElementById("lobbyCode").textContent = `Animal Company lobby code (Join this now): ${code}`;
-        setCookie("ac_cooldown", "true", 2); // 2 hours
+        setCookie("ac_cooldown", "true", 2);
       } else {
         alert("Submission failed.");
       }
